@@ -4,10 +4,17 @@ function! ale_linters#elixir#gradient#Handle(buffer, lines) abort
     " Matches patterns line the following:
     "
     " lib/filename.ex:106: Undefined remote type Module.t/0
-    let l:pattern = '\v(.+):(\d+): (.+)$'
+    " let l:patterns = ['\v(.+):(\d+): (.+)$', '\v.+$']
+    let l:patterns = ['\v(.+):(\d+): (.+)$']
     let l:output = []
 
-    for l:match in ale#util#GetMatches(a:lines, l:pattern)
+    for l:match in ale#util#GetMatches(a:lines, l:patterns)
+        " if len(l:match) == 1 && !empty(l:output)
+        "     let l:output[-1].detail .= "\n\n" . l:match[0]
+        "
+        "     continue
+        " endif
+
         let l:fpath = l:match[1]
 
         " HACK: check if the error is found in a file that in a subpath of the
@@ -23,6 +30,7 @@ function! ale_linters#elixir#gradient#Handle(buffer, lines) abort
             \   'col': 0,
             \   'type': 'E',
             \   'text': l:text,
+            \   'detail': l:text,
             \})
         endif
     endfor
